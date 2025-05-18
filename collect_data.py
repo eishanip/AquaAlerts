@@ -1,19 +1,27 @@
+import os
+import json
 import serial
 import time
 import firebase_admin
 from firebase_admin import credentials, db
 
-# Firebase setup
-cred = credentials.Certificate("firebase_key.json")
+# Get Firebase credentials from environment variable
+firebase_key_json = os.getenv('FIREBASE_KEY')
+if not firebase_key_json:
+    raise Exception("Missing FIREBASE_KEY environment variable.")
+
+firebase_dict = json.loads(firebase_key_json)
+firebase_dict["private_key"] = firebase_dict["private_key"].replace("\\n", "\n")
+
+cred = credentials.Certificate(firebase_dict)
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://iot-water-quality-fa957-default-rtdb.firebaseio.com/'
 })
 
-# Arduino setup
+# Setup Arduino (COM6 should be changed depending on OS/environment)
 arduino = serial.Serial('COM6', 9600, timeout=1)
 time.sleep(2)
 
-# Classification logic
 def predict_water_type(ph, tds, turbidity):
     if ph > 9.0:
         return "Soapy Water"
@@ -26,7 +34,6 @@ def predict_water_type(ph, tds, turbidity):
     else:
         return "Normal Water"
 
-# Collect and send
 while True:
     try:
         data = arduino.readline().decode('utf-8').strip()
