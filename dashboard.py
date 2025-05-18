@@ -21,16 +21,22 @@ data = response.json()
 if not data:
     st.warning("⚠️ No data received from Firebase.")
 else:
-    # 🔄 Convert Firebase data to DataFram
     records = [entry for entry in data.values()]
     df = pd.DataFrame(records)
+
+    # ✅ Defensive check for 'Timestamp' column
+    if 'Timestamp' not in df.columns:
+        st.error("❌ 'Timestamp' field is missing from the data. Please make sure your collector is pushing valid entries.")
+        st.write("📄 Raw Firebase data received:")
+        st.json(data)  # optional: helps debug
+        st.stop()
+
     df['Timestamp'] = pd.to_datetime(df['Timestamp'], errors='coerce')
     df.sort_values('Timestamp', inplace=True)
 
     for col in ['SampleType', 'Warning']:
         if col in df.columns:
             df.drop(columns=[col], inplace=True)
-
 
     showable = df.dropna(subset=["pH", "TDS", "Turbidity", "Temperature", "Humidity"])
 
@@ -45,7 +51,6 @@ else:
     showable['Suitability'] = showable.apply(is_ecosystem_healthy, axis=1)
     latest = showable.iloc[-1]
 
-  
     st.markdown(f"### 🌿 Ecosystem Health Status: **{latest['Suitability']}**")
     if "Healthy" in latest['Suitability']:
         st.success("✅ Water conditions are optimal for aquatic life.")
