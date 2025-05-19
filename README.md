@@ -2,26 +2,28 @@
 
 ## Overview
 
-An interactive Spanish language learning application that helps users learn vocabulary related to dates, weather, and seasons in Spanish. This React-based web application features audio pronunciation, interactive calendar selection, weather information, and visual elements to enhance the learning experience.
+AquaAlerts is an IoT-based water quality monitoring system designed for aquaculture environments like fish ponds. It helps fish farmers track essential physio-chemical parameters such as temperature, pH, turbidity, and water levels. The system includes real-time alerts and a web dashboard, empowering users to maintain healthy aquatic conditions and reduce fish mortality.
 
-## Features
-
-- **Current Date Display**: Shows today's date in both English and Spanish with audio pronunciation
-- **Weather Information**: Displays the current temperature in both numeric format and Spanish words
-- **Interactive Calendar**: Allows users to select any date and see it translated into Spanish
-- **Season Information**: Shows the current season in Spanish based on the selected date
-- **Audio Playback**: Includes spoken Spanish pronunciations for dates, weather, and seasons
-- **Image Slideshow**: Displays rotating images of Spanish-speaking countries and cultural scenes
+- **Real-time Monitoring**: Measures pH, turbidity, temperature, and water level using sensors
+- **Live Dashboard**: Visualizes water quality parameters with easy-to-read graphs and indicators
+- **SMS Alerts**: Sends SMS notifications when values exceed critical thresholds
+- **Historical Data Logging**: Stores past data to identify trends and support long-term analysis
+- **User-friendly Interface**: Minimal and functional web dashboard built with Flask and HTML/CSS
+- **Offline Edge Sensing**: On-device microcontroller continuously collects data even when offline
 
 ## Technologies Used
 
-- **React**: Frontend library for building the user interface
-- **Tailwind CSS**: Utility-first CSS framework for styling
-- **Framer Motion**: Animation library for smooth transitions and effects
-- **Day.js**: Modern JavaScript date utility library
-- **Axios**: Promise-based HTTP client for API requests
-- **Open-Meteo API**: Weather data integration
-- **React-Calendar**: Calendar component for date selection
+- **ESP32 (with Arduino)**: Microcontroller to interface with water sensors
+- **Sensors**:
+  - pH Sensor
+  - Turbidity Sensor
+  - Temperature Sensor (DS18B20)
+  - Ultrasonic Sensor for water level
+- **Python Flask**: Backend for data ingestion, processing, and visualisation
+- **SQLite**: Lightweight database for logging sensor data
+- **Twilio API**: Sends SMS alerts for abnormal water conditions
+- **Chart.js**: Renders dynamic charts on the dashboard
+- **Bootstrap**: Styling framework for responsive UI
 
 ## Live Website
 
@@ -42,62 +44,62 @@ https://iot-water-quality-monitor-2.onrender.com/
    cd AquaAlerts
    ```
 
-3. Install dependencies:
+3. Install required Python packages:
 
    ```bash
-   npm install
+   pip install -r requirements.txt
    ```
 
-4. Start the development server:
+4. Run the Flask server:
 
    ```bash
-   npm run dev
+   python app.py
    ```
 
-5. Open your browser and navigate to `http://localhost:3000`
+5. Open your browser and go to `http://localhost:5000` to view the dashboard.
 
 ## Usage
 
-- The main page displays three cards: Current Date, Current Weather, and Date Selection
-- Click on the "Escuchar" buttons to hear Spanish pronunciations
-- Use the calendar to select different dates and learn their Spanish translations
-- The weather card automatically detects your location to display the current temperature
-- Explore the image slideshow to see visual representations of Spanish-speaking cultures
+- Upload sensor data to the ESP32 via Arduino code (`iot_code/`)
+- The ESP32 pushes data to the Flask backend via HTTP
+- The Flask app logs data to SQLite and updates the dashboard
+- When values like pH or turbidity cross danger levels, SMS alerts are sent
+- The dashboard provides a snapshot of current values and trends
 
 ## Project Structure
 
 ```
-FechaFinder/
-├── components/
-│   └── ui/               # UI components (calendar, cards, buttons)
-├── public/
-│   ├── audio/            # Spanish pronunciation audio files
-│   └── images/           # Slideshow and background images
-├── src/
-│   ├── App.jsx           # Main application component
-│   └── index.js          # Entry point
-└── README.md             # Project documentation
+AquaAlerts/
+├── iot_code/               # Arduino code for ESP32 + sensors
+├── static/                 # Static assets (CSS, JS)
+├── templates/              # HTML templates for Flask
+├── app.py                  # Main Flask server
+├── database.db             # SQLite database
+├── requirements.txt        # Python dependencies
+└── README.md               # Project documentation
 ```
 
-## Audio Functionality
+## Alert System
 
-The application includes Spanish audio pronunciations for:
+- **pH Threshold**: Below 6.5 or above 8.5 triggers an alert
+- **Turbidity Threshold**: Above 100 NTU triggers an alert
+- **Temperature**: Alerts if outside optimal fish-farming range (25°C–30°C)
+- **Water Level**: Alerts if water is too low or overflowing
 
-- Days of the week
-- Months
-- Numbers
-- Weather-related terms
-- Seasons
+## Sensors and Calibration
 
-The audio playback system sequentially plays word-by-word pronunciations to help users learn proper Spanish pronunciation.
+Each sensor is calibrated and tested for use in field conditions:
+- **DS18B20**: Waterproof, calibrated for 0.5°C accuracy
+- **pH Sensor**: Calibrated using buffer solutions (pH 4, 7, 10)
+- **Turbidity Sensor**: Based on light scattering method
+- **Ultrasonic Sensor**: Distance measured and mapped to water depth
 
-## Spanish Number Translation
+## Dashboard Features
 
-The application includes a comprehensive system for translating numbers into Spanish words, supporting values up to 9999, and following Spanish numerical grammar rules.
-
-## Weather Integration
-
-Weather data is obtained using the Open-Meteo API, which provides temperature information based on the user's geolocation. The application then converts this numerical data into Spanish words.
+- Live readings with timestamps
+- Color-coded cards indicating safe or dangerous ranges
+- Trendline graphs for each parameter over time
+- Auto-refresh every 10 seconds for near real-time updates
 
 ## Team Members
 
@@ -111,4 +113,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Special thanks to our Value-Added Course professor for guidance.
+- Developed as part of the "Industry 4.0 and Enabling Technologies" VAC at VIT
+- Selected for presentation before professors from Middlesex University, UK
+- Special thanks to the faculty mentors and field experts for their valuable feedback
